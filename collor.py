@@ -59,3 +59,4 @@ for line in sys.stdin.readlines():
     for arg in args:
         line = re.sub(arg[0],'\033[' + str(arg[2]) + ';'+str(arg[1])+'m' + arg[0] +  '\033[0m', line)
     sys.stdout.write(line)
+    sys.stdout.flush()
