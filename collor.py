@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 """collor: Echoes in color  ."""
@@ -13,11 +13,11 @@ __maintainer__ 	= "Leandro Abelin Noskoski"
 __email__ 	= "leandro@alternativalinux.net"
 __status__ 	= "Production"
 
-import sys, re, random
+import sys, re, random, os, time
 
 i = 1
-attrange = [0] + range(7 , 0, -1)
-fgrange = range(30, 37 + 1) + range(90,97 + 1) + [39]
+attrange = [0] + list(range(7 , 0, -1))
+fgrange = list(range(30, 37 + 1)) + list(range(90,97 + 1)) + [39]
 args = []
 
 def print_usage():
@@ -55,8 +55,7 @@ for att in attrange:
             break
         i = i + 1
 
-for line in sys.stdin.readlines():
+for line in sys.stdin:
     for arg in args:
         line = re.sub(arg[0],'\033[' + str(arg[2]) + ';'+str(arg[1])+'m' + arg[0] +  '\033[0m', line)
     sys.stdout.write(line)
-    sys.stdout.flush()
