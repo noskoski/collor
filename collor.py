@@ -13,7 +13,7 @@ __maintainer__ 	= "Leandro Abelin Noskoski"
 __email__ 	= "leandro@alternativalinux.net"
 __status__ 	= "Production"
 
-import sys, re, random, os, time
+import sys, re, random
 
 i = 1
 attrange = [0] + list(range(7 , 0, -1))
