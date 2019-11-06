@@ -8,7 +8,7 @@ __site__	= "www.alternativalinux.net"
 __projectpage__ = "https://github.com/noskoski/collor"
 __copyright__   = "Copyright 2019, Alternativa Linux"
 __license__ 	= "GPL"
-__version__ 	= "1.1"
+__version__ 	= "1.2"
 __maintainer__ 	= "Leandro Abelin Noskoski"
 __email__ 	= "leandro@alternativalinux.net"
 __status__ 	= "Production"
@@ -30,6 +30,7 @@ Examples:
 
 Options:
     -r              Randomize colors
+    -o              Only print Matches
     -h or --help    This Message
 
 
@@ -49,13 +50,25 @@ if "-r" in sys.argv:
 for att in attrange:
     for clfg in fgrange :
         if i < len(sys.argv):
-            if not re.match("^-r$",sys.argv[i]):
+            if (not re.match("^-r$",sys.argv[i]) ) and (not re.match("^-o$",sys.argv[i]) ):
                 args.append([sys.argv[i],clfg,att])
         else:
             break
         i = i + 1
 
 for line in sys.stdin:
+    _have=0
     for arg in args:
+        if None != re.match("(.*)" + arg[0] + "(.*)",line,re.M|re.I):
+            _have=1
+#            sys.stdout.write("acheiiii")
+            
         line = re.sub(arg[0],'\033[' + str(arg[2]) + ';'+str(arg[1])+'m' + arg[0] +  '\033[0m', line)
-    sys.stdout.write(line)
+        
+    if "-o" in sys.argv:
+        if _have == 1 :
+            sys.stdout.write(line)
+    else:
+        sys.stdout.write(line)
+            
+    

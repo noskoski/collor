@@ -11,4 +11,5 @@ Examples:
 
 Options:
     -r              Randomize colors
+    -o              Only print Matches
     -h or --help    This Message
