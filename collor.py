@@ -84,7 +84,7 @@ class db:
                 _x.qtd += 1
                 return(self.words.index(_x))
             else:
-                return(false)
+                return(False)
 ####################################3
 
 if __name__ == '__main__':
