@@ -57,6 +57,7 @@ class db:
     def __init__(self, min, max):
         self.words = []
         self.min = min
+        self.max = max
 
     def add(self, _str, ign=None):
         if ign:
