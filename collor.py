@@ -80,9 +80,11 @@ class db:
 
     def check(self,nome):
         for _x in self.words:
-           if _x.nome == nome:
-               _x.qtd += 1
-               return(self.words.index(_x))
+            if  _x.nome == nome:
+                _x.qtd += 1
+                return(self.words.index(_x))
+            else
+                return(false)
 ####################################3
 
 if __name__ == '__main__':
