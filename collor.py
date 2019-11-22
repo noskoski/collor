@@ -54,7 +54,7 @@ class item:
 
 
 class db:
-    def __init__(self, min):
+    def __init__(self, min, max):
         self.words = []
         self.min = min
 
@@ -62,7 +62,7 @@ class db:
         if ign:
             splited_str = _str.split();
             for slice in splited_str:
-                if len(slice) >= self.min :
+                if len(slice) >= self.min and len(slice) < self.max:
                     tt = self.check(slice)
                     if not tt:
                         #sys.stdout.write(slice )
@@ -95,7 +95,7 @@ if __name__ == '__main__':
         random.shuffle(fgrange)
         random.shuffle(attrange)
 
-    colordb = db(3)
+    colordb = db(3,50)
 
     for att in attrange:
         for clfg in fgrange :
