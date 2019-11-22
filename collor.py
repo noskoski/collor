@@ -83,7 +83,7 @@ class db:
             if  _x.nome == nome:
                 _x.qtd += 1
                 return(self.words.index(_x))
-            else
+            else:
                 return(false)
 ####################################3
 
