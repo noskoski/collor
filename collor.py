@@ -61,12 +61,11 @@ class db:
 
     def add(self, _str, ign=None):
         if ign:
-            splited_str = _str.split();
+            splited_str = _str.split(" ");
             for slice in splited_str:
                 if len(slice) >= self.min and len(slice) < self.max:
                     tt = self.check(slice)
                     if not tt:
-                        #sys.stdout.write(slice )
                         _i = item(slice)
                         _str = re.sub(re.escape(slice),_i.cnome,_str, flags=re.IGNORECASE)
                         self.words.append(_i)
@@ -83,8 +82,6 @@ class db:
             if  _x.nome == nome:
                 _x.qtd += 1
                 return(self.words.index(_x))
-            else:
-                return(False)
 ####################################3
 
 if __name__ == '__main__':
@@ -107,7 +104,7 @@ if __name__ == '__main__':
                     args.append([sys.argv[i],clfg,att])
             else:
                 break
-            i = i + 1
+            i += 1
 
     for line in sys.stdin:
         _have=0
@@ -126,3 +123,4 @@ if __name__ == '__main__':
                 colordb.add(line,_s)
         else:
             colordb.add(line,_s)
+#        colordb.stats()
