@@ -65,7 +65,7 @@ class db:
             for slice in splited_str:
                 if len(slice) >= self.min and len(slice) < self.max:
                     tt = self.check(slice)
-                    if not tt:
+                    if not tt and not tt == 0:
                         _i = item(slice)
                         _str = re.sub(re.escape(slice),_i.cnome,_str, flags=re.IGNORECASE)
                         self.words.append(_i)
@@ -77,11 +77,16 @@ class db:
         for y in self.words:
             sys.stdout.write(str(self.words.index(y)) + " = " +   y.print() + "\n")
 
+    def count(self):
+        sys.stdout.write(str(len(self.words)))
+
     def check(self,nome):
         for _x in self.words:
             if  _x.nome == nome:
                 _x.qtd += 1
                 return(self.words.index(_x))
+        return(None)
+
 ####################################3
 
 if __name__ == '__main__':
@@ -123,4 +128,4 @@ if __name__ == '__main__':
                 colordb.add(line,_s)
         else:
             colordb.add(line,_s)
-#        colordb.stats()
+    colordb.stats()
