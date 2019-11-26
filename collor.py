@@ -61,8 +61,10 @@ class db:
 
     def add(self, _str, ign=None):
         if ign:
-            splited_str = _str.split(" ");
-            for slice in splited_str:
+            splitted_str = _str.split(" ");
+            splitted_str = self._split(splitted_str)
+
+            for slice in splitted_str:
                 if len(slice) >= self.min and len(slice) < self.max:
                     tt = self.check(slice)
                     if not tt and not tt == 0:
@@ -86,6 +88,18 @@ class db:
                 _x.qtd += 1
                 return(self.words.index(_x))
         return(None)
+
+    def _split(self,splitted):
+        _grp = [ ["[","]"],["(",")"],["<",">"],["{","}"] ]
+        _arr = []
+        for _i in _grp :
+            for _sp in splitted:
+                _matches = re.search(re.escape(_i[0]) + ".*" + re.escape(_i[1]), _sp)
+                if _matches:
+                    _arr.append(_matches.group(0))
+        return(splitted + _arr)
+
+
 
 ####################################3
 
@@ -128,4 +142,4 @@ if __name__ == '__main__':
                 colordb.add(line,_s)
         else:
             colordb.add(line,_s)
-    colordb.stats()
+    #colordb.stats()
