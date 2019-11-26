@@ -61,8 +61,9 @@ class db:
 
     def add(self, _str, ign=None):
         if ign:
-            splitted_str = _str.split(" ");
-            splitted_str = self._split(splitted_str)
+            #splitted_str = _str.split(" ");
+            
+            splitted_str = self._split(_str)
 
             for slice in splitted_str:
                 if len(slice) >= self.min and len(slice) < self.max:
@@ -89,15 +90,18 @@ class db:
                 return(self.words.index(_x))
         return(None)
 
-    def _split(self,splitted):
-        _grp = [ ["[","]"],["(",")"],["<",">"],["{","}"] ]
+    def _split(self,_str):
+        _grp = [ r'[.*]',r'(.*)',r'<.*>',r'{.*}' ]
         _arr = []
+#        splitted = re.split(';|,|\ ',_str)
         for _i in _grp :
-            for _sp in splitted:
-                _matches = re.search(re.escape(_i[0]) + ".*" + re.escape(_i[1]), _sp)
-                if _matches:
-                    _arr.append(_matches.group(0))
-        return(splitted + _arr)
+ #           for _sp in splitted:
+             _matches = re.findall(_i, _str)
+             for _match in _matches:
+    #              if _matches:
+                   _arr.append(_match)
+                   print(_match)
+        return( _arr)
 
 
 
@@ -114,7 +118,7 @@ if __name__ == '__main__':
         random.shuffle(fgrange)
         random.shuffle(attrange)
 
-    colordb = db(3,50)
+    colordb = db(4,60)
 
     for att in attrange:
         for clfg in fgrange :
