@@ -91,16 +91,12 @@ class db:
         return(None)
 
     def _split(self,_str):
-        _grp = [ r'[.*]',r'(.*)',r'<.*>',r'{.*}' ]
+        _grp = [ '\[.*?\]','\(.*?\)','\<.*?\>','\{.*?\}','[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+','[0-9]{2,4}-[0-9]{2}-[0-9]{2,4}','[0-2]{0,1}[0-9]{1}\:[0-9]{1,2}\:[0-9]{1,2}','http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+' ]
         _arr = []
-#        splitted = re.split(';|,|\ ',_str)
         for _i in _grp :
- #           for _sp in splitted:
              _matches = re.findall(_i, _str)
              for _match in _matches:
-    #              if _matches:
                    _arr.append(_match)
-                   print(_match)
         return( _arr)
 
 
