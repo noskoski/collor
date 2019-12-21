@@ -16,17 +16,18 @@ __status__ 	= "Production"
 import sys, re, random, argparse
 
 i = 1
-attrange = [0] + list(range(7 , 0, -1))
-fgrange = list(range(30, 37 + 1)) + list(range(90,97 + 1)) + [39]
-bgrange = list(range(40, 47 + 1)) + list(range(100,107 + 1)) + [49]
+#attrange = [0] + list(range(7 , 0, -1))
+#fgrange = list(range(30, 37 + 1)) + list(range(90,97 + 1))
+bgrange = list(range(40, 47 + 1)) + list(range(100,107 + 1))
 _hi = []
 
-class item:
-    def __init__(self,nome=None,fg=None,att=None,bg=None):
+
+class Item:
+    def __init__(self,nome,colors):
         self.nome = nome
-        self.fg = random.choice(fgrange)
-        self.bg = random.choice(bgrange)
-        self.att = random.choice(attrange)
+        self.fg = colors["fg"]
+        self.bg = colors["bg"]
+        self.att = colors["att"]
         self.qtd = 1
         self.cnome = '\x1B[' + str(self.att) + ';' + str(self.bg) + ';' + str(self.fg) + 'm' + str(self.nome) +  '\x1B[0m'
 
@@ -35,11 +36,23 @@ class item:
 
 
 
-class db:
+class Db:
     def __init__(self, min, max):
         self.words = []
         self.min = min
         self.max = max
+        self.colorList = []
+        self.colorList_index = 0
+        self.fgcolors = list(range(30, 37 + 1)) + list(range(90,97 + 1)) + [39]
+        self.bgcolors = list(range(40, 47 + 1)) + list(range(100,107 + 1)) + [49]
+        self.attcolors = [0] + list(range(7 , 0, -1))
+        self.attcolors.remove(5) # remove some blink (sucks)
+        for att in self.attcolors:
+            for bg in self.bgcolors:
+                for fg in self.fgcolors:
+                    if (fg == (bg - 10)):  # bypass same color for fg and bg
+                        continue
+                    self.colorList.append({"fg":fg,"bg":bg,"att":att})
 
     def add(self, _str, ign=None):
         if ign:
@@ -48,19 +61,32 @@ class db:
                 if len(slice) >= self.min and len(slice) < self.max:
                     tt = self.check(slice)
                     if not tt and not tt == 0:
-                        _i = item(slice)
+                        _i = self.add_item(slice)
                         _str = re.sub(re.escape(slice),_i.cnome,_str, flags=re.IGNORECASE)
-                        self.words.append(_i)
                     else:
                         _str = re.sub(re.escape(slice),self.words[tt].cnome,_str, flags=re.IGNORECASE)
         sys.stdout.write(_str )
 
+    def add_item(self,slice):
+        _i = Item(slice,self.get_color())
+        self.words.append(_i)
+        return(_i)
+
+
     def stats(self):
         for y in self.words:
-            sys.stdout.write(str(self.words.index(y)) + " = " +   y.print() + "\n")
+            sys.stdout.write(str(self.words.index(y)) + " = " +   y.print() + "\     n")
 
     def count(self):
         sys.stdout.write(str(len(self.words)))
+
+    def get_color(self):
+        tmp = self.colorList[self.colorList_index]
+        self.colorList_index += 1
+        return(tmp)
+
+    def random(self):
+        random.shuffle(self.colorList, random=None)
 
     def check(self,nome):
         if '\x1B[' not in nome: ## bypass existent color
@@ -109,7 +135,6 @@ class db:
 if __name__ == '__main__':
 
 
-
     parser = argparse.ArgumentParser(description='Process some integers.')
 
     parser.add_argument("-r", "--random",
@@ -130,38 +155,38 @@ if __name__ == '__main__':
                 nargs='+')
 
     args = parser.parse_args()
-    print(args)
 
-#    if len(sys.argv) <2  or ("-h" in sys.argv) or ("--help" in sys.argv) :
-#        sys.exit(1)
+    if len(sys.argv) <2  or ("-h" in sys.argv) or ("--help" in sys.argv) :
+        sys.exit(1)
 
-    if args.random:
-        random.shuffle(fgrange)
-        random.shuffle(bgrange)
-        random.shuffle(attrange)
-
-    colordb = db(1,600)
+    #initialize   class ()
+    colordb = Db(1,600)
     i=0
 
+
+    #random
+    if args.random:
+        colordb.random()
+
+
+    # sets -p A if no parameter
     if ( args.highlight==None and args.only==False and args.patterns==None ):
         args.patterns="A"
 
+
+    # set one color for every highlight
     if args.highlight:
-        for att in attrange:
-            for clbg in bgrange :
-                for clfg in fgrange :
-                    if i < len(args.highlight):
-                            _hi.append([args.highlight[i],clfg,att,clbg])
-                    else:
-                        break
-                    i += 1
+        for arg in args.highlight :
+            _hi.append([arg,colordb.get_color()])
+
+    #read stdin
 
     for line in sys.stdin:
         _have=0
         for hi in _hi:
             if None != re.match("(.*)" + re.escape(hi[0]) + "(.*)",line,re.M|re.I):
                 _have=1
-            line = re.sub(re.escape(hi[0]),'\033[' + str(hi[2]) + ';' + str(hi[3]) + ';' + str(hi[1])+'m' + hi[0] +  '\033[0m', line)
+            line = re.sub(re.escape(hi[0]),'\x1B[' + str(hi[1]["att"]) + ';' + str(hi[1]["bg"]) + ';' + str(hi[1]["fg"]) + 'm' + hi[0] +  '\x1B[0m', line)
 
         if args.patterns and len(args.patterns):
             _s=True
