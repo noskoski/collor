@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#.  !/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 """collor: Echoes in color  ."""
@@ -15,10 +15,8 @@ __status__ 	= "Production"
 
 import sys, re, random, argparse
 
+
 i = 1
-#attrange = [0] + list(range(7 , 0, -1))
-#fgrange = list(range(30, 37 + 1)) + list(range(90,97 + 1))
-bgrange = list(range(40, 47 + 1)) + list(range(100,107 + 1))
 _hi = []
 
 
@@ -81,9 +79,12 @@ class Db:
         sys.stdout.write(str(len(self.words)))
 
     def get_color(self):
+        if self.colorList_index >= len(self.colorList) :
+            self.colorList_index = 0
         tmp = self.colorList[self.colorList_index]
         self.colorList_index += 1
-        return(tmp)
+        return (tmp)
+
 
     def random(self):
         random.shuffle(self.colorList, random=None)
