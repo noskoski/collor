@@ -52,7 +52,7 @@ class Db:
                         continue
                     self.colorList.append({"fg":fg,"bg":bg,"att":att})
 
-    def add(self, _str, ign=None):
+    def add(self, _str, ign=None, flags=0):
         if ign:
             splitted_str = self._split(_str)
             for slice in splitted_str:
@@ -60,9 +60,9 @@ class Db:
                     tt = self.check(slice)
                     if not tt and not tt == 0:
                         _i = self.add_item(slice)
-                        _str = re.sub(re.escape(slice),_i.cnome,_str, flags=re.IGNORECASE)
+                        _str = re.sub(re.escape(slice),_i.cnome,_str, 0, flags)
                     else:
-                        _str = re.sub(re.escape(slice),self.words[tt].cnome,_str, flags=re.IGNORECASE)
+                        _str = re.sub(re.escape(slice),self.words[tt].cnome,_str, 0, flags)
         sys.stdout.write(_str )
 
     def add_item(self,slice):
@@ -144,6 +144,9 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--only",
                 help="print only match strings",
                 action='store_true')
+    parser.add_argument("-i", "--insensitive",
+                help="Case-insensitive",
+                action='store_true')
     parser.add_argument("-p", "--patterns",
                 help="Search for patterns ADTUEIPSXY = \n( A=ALL, D=Date, T=Time, U=Urls, E=Emails, I=Ips, P=(), S=[], X=<>, Y={}, Q=\"\" or '' )",
                 metavar='pattern chars',
@@ -182,21 +185,27 @@ if __name__ == '__main__':
 
     #read stdin
 
+    if "-i" in sys.argv:
+        flags = re.I
+    else:
+        flags = 0    
+
+
     for line in sys.stdin:
         _have=0
         for hi in _hi:
-            if None != re.match("(.*)" + re.escape(hi[0]) + "(.*)",line,re.M|re.I):
+            if None != re.match("(.*)" + re.escape(hi[0]) + "(.*)",line, flags):
                 _have=1
-            line = re.sub(re.escape(hi[0]),'\x1B[' + str(hi[1]["att"]) + ';' + str(hi[1]["bg"]) + ';' + str(hi[1]["fg"]) + 'm' + hi[0] +  '\x1B[0m', line)
+            line = re.sub(re.escape(hi[0]),'\x1B[' + str(hi[1]["att"]) + ';' + str(hi[1]["bg"]) + ';' + str(hi[1]["fg"]) + 'm' + hi[0] +  '\x1B[0m', line, 0, flags)
 
         if args.patterns and len(args.patterns):
             _s=True
         else:
             _s=False
-
+      
         if "-o" in sys.argv:
             if _have == 1 :
-                colordb.add(line,_s)
+                colordb.add(line,_s,flags)
         else:
-            colordb.add(line,_s)
+            colordb.add(line,_s,flags)
     #colordb.stats()
