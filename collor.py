@@ -15,13 +15,6 @@ __status__ 	= "Production"
 
 import sys, re, random, argparse
 
-i = 1
-#attrange = [0] + list(range(7 , 0, -1))
-#fgrange = list(range(30, 37 + 1)) + list(range(90,97 + 1))
-bgrange = list(range(40, 47 + 1)) + list(range(100,107 + 1))
-_hi = []
-
-
 class Item:
     def __init__(self,nome,colors):
         self.nome = nome
@@ -99,6 +92,8 @@ class Db:
     def _split(self,_str):
 
         _grp = [""]
+        if "W" in args.patterns[0] or "A" in args.patterns[0]:
+            _grp.append(r'\t[a-zA-Z0-9]{1,}_[a-zA-Z0-9\-_]{1,}\.[1-9]{1,2}\.[a-zA-Z0-9]{25}\t')
         if "S" in args.patterns[0] or "A" in args.patterns[0]:
             _grp.append('\[.*?\]')
         if "P" in args.patterns[0] or "A" in args.patterns[0]:
@@ -144,7 +139,7 @@ if __name__ == '__main__':
                 help="print only match strings",
                 action='store_true')
     parser.add_argument("-p", "--patterns",
-                help="Search for patterns ADTUEIPSXY = \n( A=ALL, D=Date, T=Time, U=Urls, E=Emails, I=Ips, P=(), S=[], X=<>, Y={}, Q=\"\" or '' )",
+                help="Search for patterns ADTUEIPSXYWQ = \n( A=ALL, D=Date, T=Time, U=Urls, E=Emails, I=Ips, P=(), S=[], X=<>, Y={}, W={{.Name}} Q=\"\" or '' )",
                 metavar='pattern chars',
                 type=str,
                 nargs='+')
@@ -161,7 +156,9 @@ if __name__ == '__main__':
 
     #initialize   class ()
     colordb = Db(1,600)
-    i=0
+    i = 1
+    _hi = []
+
 
 
     #random
@@ -187,6 +184,7 @@ if __name__ == '__main__':
             if None != re.match("(.*)" + re.escape(hi[0]) + "(.*)",line,re.M|re.I):
                 _have=1
             line = re.sub(re.escape(hi[0]),'\x1B[' + str(hi[1]["att"]) + ';' + str(hi[1]["bg"]) + ';' + str(hi[1]["fg"]) + 'm' + hi[0] +  '\x1B[0m', line)
+
 
         if args.patterns and len(args.patterns):
             _s=True
