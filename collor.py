@@ -13,16 +13,10 @@ __maintainer__ 	= "Leandro Abelin Noskoski"
 __email__ 	= "leandro@alternativalinux.net"
 __status__ 	= "Production"
 
+
+
 import sys, re, random, argparse
 
-<<<<<<< HEAD
-=======
-
-i = 1
-_hi = []
-
-
->>>>>>> 87d7bf94bbadd89b82092e8d355ea3d9c329b04a
 class Item:
     def __init__(self,nome,colors):
         self.nome = nome
@@ -55,7 +49,7 @@ class Db:
                         continue
                     self.colorList.append({"fg":fg,"bg":bg,"att":att})
 
-    def add(self, _str, ign=None, flags=0):
+    def add(self, _str, ign=None):
         if ign:
             splitted_str = self._split(_str)
             for slice in splitted_str:
@@ -63,9 +57,9 @@ class Db:
                     tt = self.check(slice)
                     if not tt and not tt == 0:
                         _i = self.add_item(slice)
-                        _str = re.sub(re.escape(slice),_i.cnome,_str, 0, flags)
+                        _str = re.sub(re.escape(slice),_i.cnome,_str, flags=re.IGNORECASE)
                     else:
-                        _str = re.sub(re.escape(slice),self.words[tt].cnome,_str, 0, flags)
+                        _str = re.sub(re.escape(slice),self.words[tt].cnome,_str, flags=re.IGNORECASE)
         sys.stdout.write(_str )
 
     def add_item(self,slice):
@@ -82,12 +76,9 @@ class Db:
         sys.stdout.write(str(len(self.words)))
 
     def get_color(self):
-        if self.colorList_index >= len(self.colorList) :
-            self.colorList_index = 0
         tmp = self.colorList[self.colorList_index]
         self.colorList_index += 1
-        return (tmp)
-
+        return(tmp)
 
     def random(self):
         random.shuffle(self.colorList, random=None)
@@ -149,9 +140,6 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--only",
                 help="print only match strings",
                 action='store_true')
-    parser.add_argument("-i", "--insensitive",
-                help="Case-insensitive",
-                action='store_true')
     parser.add_argument("-p", "--patterns",
                 help="Search for patterns ADTUEIPSXYWQ = \n( A=ALL, D=Date, T=Time, U=Urls, E=Emails, I=Ips, P=(), S=[], X=<>, Y={}, W={{.Name}} Q=\"\" or '' )",
                 metavar='pattern chars',
@@ -192,28 +180,22 @@ if __name__ == '__main__':
 
     #read stdin
 
-    if "-i" in sys.argv:
-        flags = re.I
-    else:
-        flags = 0    
-
-
     for line in sys.stdin:
         _have=0
         for hi in _hi:
-            if None != re.match("(.*)" + re.escape(hi[0]) + "(.*)",line, flags):
+            if None != re.match("(.*)" + re.escape(hi[0]) + "(.*)",line,re.M|re.I):
                 _have=1
-            line = re.sub(re.escape(hi[0]),'\x1B[' + str(hi[1]["att"]) + ';' + str(hi[1]["bg"]) + ';' + str(hi[1]["fg"]) + 'm' + hi[0] +  '\x1B[0m', line, 0, flags)
+            line = re.sub(re.escape(hi[0]),'\x1B[' + str(hi[1]["att"]) + ';' + str(hi[1]["bg"]) + ';' + str(hi[1]["fg"]) + 'm' + hi[0] +  '\x1B[0m', line)
 
 
         if args.patterns and len(args.patterns):
             _s=True
         else:
             _s=False
-      
+
         if "-o" in sys.argv:
             if _have == 1 :
-                colordb.add(line,_s,flags)
+                colordb.add(line,_s)
         else:
-            colordb.add(line,_s,flags)
+            colordb.add(line,_s)
     #colordb.stats()
