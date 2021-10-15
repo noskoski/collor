@@ -92,7 +92,6 @@ class Db:
         return(None)
 
     def _split(self,_str):
-2021-10-15T19:11:44+00:00	ciga-nota-dev_mongo-express.1.1heugj5ob5bf2zrhf0dj1cqzj	{"container_name":"/ciga-nota-dev_mongo-express.1.1heugj5ob5bf2zrhf0dj1cqzj","source":"stdout","log":"------------------------","container_id":"902e0eb56bd767fc57b41be4b512cb405fac6b814be6fae7bc0d2ca64113c2ea"}
 
         _grp = [""]
         if "W" in args.patterns[0] or "A" in args.patterns[0]:
