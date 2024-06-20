@@ -95,7 +95,7 @@ class Db:
 
         _grp = [""]
         if "W" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append(r'\t[a-zA-Z0-9\-_]{1,}_[a-zA-Z0-9\-_]{1,}\.[1-9]{1,2}\.[a-zA-Z0-9]{25}\t')
+            _grp.append(r'\t[a-zA-Z0-9\-_]{1,}_[a-zA-Z0-9\-_]{1,}(\.[a-zA-Z0-9]{25}){1,2}\t')
         if "S" in args.patterns[0] or "A" in args.patterns[0]:
             _grp.append('\[.*?\]')
         if "P" in args.patterns[0] or "A" in args.patterns[0]:
