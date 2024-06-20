@@ -63,7 +63,10 @@ class Db:
         sys.stdout.write(_str )
 
     def add_item(self,slice):
-        _i = Item(slice,self.get_color())
+        try:
+            _i = Item(slice,self.get_color())
+        except IndexError:
+            print("error:" + slice)    
         self.words.append(_i)
         return(_i)
 
