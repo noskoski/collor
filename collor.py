@@ -79,7 +79,7 @@ class Db:
         tmp = self.colorList[self.colorList_index]
         if self.colorList_index >= len(self.colorList) :
                self.colorList_index = 0
-        else
+        else:
                self.colorList_index += 1
        
         return(tmp)
