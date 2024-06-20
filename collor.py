@@ -63,10 +63,7 @@ class Db:
         sys.stdout.write(_str )
 
     def add_item(self,slice):
-        try:
-            _i = Item(slice,self.get_color())
-        except IndexError:
-            print("error:" + slice)    
+        _i = Item(slice,self.get_color())
         self.words.append(_i)
         return(_i)
 
@@ -80,7 +77,11 @@ class Db:
 
     def get_color(self):
         tmp = self.colorList[self.colorList_index]
-        self.colorList_index += 1
+        if self.colorList_index >= len(self.colorList) :
+               self.colorList_index = 0
+        else
+               self.colorList_index += 1
+       
         return(tmp)
 
     def random(self):
