@@ -38,6 +38,7 @@ class Db:
         self.max = max
         self.colorList = []
         self.colorList_index = 0
+        self._regex_cache = {}
         self.fgcolors = list(range(30, 37 + 1)) + list(range(90,97 + 1)) + [39]
         self.bgcolors = list(range(40, 47 + 1)) + list(range(100,107 + 1)) + [49]
         self.attcolors = [0] + list(range(7 , 0, -1))
@@ -70,22 +71,20 @@ class Db:
 
     def stats(self):
         for y in self.words:
-            sys.stdout.write(str(self.words.index(y)) + " = " +   y.print() + "\     n")
+            sys.stdout.write(str(self.words.index(y)) + " = " + y.print() + "\n")
 
     def count(self):
         sys.stdout.write(str(len(self.words)))
 
     def get_color(self):
-        tmp = self.colorList[self.colorList_index]
         if self.colorList_index >= len(self.colorList) :
-               self.colorList_index = 0
-        else:
-               self.colorList_index += 1
-       
-        return(tmp)
+            self.colorList_index = 0
+        tmp = self.colorList[self.colorList_index]
+        self.colorList_index += 1
+        return tmp
 
     def random(self):
-        random.shuffle(self.colorList, random=None)
+        random.shuffle(self.colorList)
 
     def check(self,nome):
         if '\x1B[' not in nome: ## bypass existent color
@@ -97,34 +96,37 @@ class Db:
 
     def _split(self,_str):
 
-        _grp = [""]
+        _grp = []
         if "W" in args.patterns[0] or "A" in args.patterns[0]:
             _grp.append(r'\t[a-zA-Z0-9\-_]{1,}_[a-zA-Z0-9\-_]{1,}(\.[a-zA-Z0-9]{25}){1,2}\t')
         if "S" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append('\[.*?\]')
+            _grp.append(r'\[.*?\]')
         if "P" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append('\(.*?\)')
+            _grp.append(r'\(.*?\)')
         if "X" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append('\<.*?\>')
+            _grp.append(r'\<.*?\>')
         if "Y" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append('\{.*?\}')
+            _grp.append(r'\{.*?\}')
         if "T" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append('[0-2]{0,1}[0-9]{1}\:[0-9]{1,2}\:[0-9]{1,2}')
+            _grp.append(r'[0-2]{0,1}[0-9]{1}\:[0-9]{1,2}\:[0-9]{1,2}')
         if "E" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append('[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+')
+            _grp.append(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+')
         if "D" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append('[0-9]{2,4}-[0-9]{2}-[0-9]{2,4}')
+            _grp.append(r'[0-9]{2,4}-[0-9]{2}-[0-9]{2,4}')
         if "U" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+            _grp.append(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
         if "I" in args.patterns[0] or "A" in args.patterns[0]:
-            _grp.append('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
+            _grp.append(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
         if "Q" in args.patterns[0] or "A" in args.patterns[0]:
             _grp.append('"(.*?)"')
             _grp.append('\'(.*?)\'')
         _arr = []
-#        print(_grp)
         for _i in _grp :
-             _matches = re.findall(_i, _str)
+             _regex = self._regex_cache.get(_i)
+             if _regex is None:
+                 _regex = re.compile(_i)
+                 self._regex_cache[_i] = _regex
+             _matches = _regex.findall(_str)
              for _match in _matches:
                    _arr.append(_match)
         return( _arr)
@@ -174,7 +176,7 @@ if __name__ == '__main__':
 
     # sets -p A if no parameter
     if ( args.highlight==None and args.only==False and args.patterns==None ):
-        args.patterns="A"
+        args.patterns=["A"]
 
 
     # set one color for every highlight
@@ -193,11 +195,11 @@ if __name__ == '__main__':
 
 
         if args.patterns and len(args.patterns):
-            _s=True
+            _s = True
         else:
-            _s=False
+            _s = False
 
-        if "-o" in sys.argv:
+        if args.only:
             if _have == 1 :
                 colordb.add(line,_s)
         else:
